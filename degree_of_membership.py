@@ -1,62 +1,62 @@
-# Degree of membership functions for wall distance
-def calculate_dom_near_wall(x):
-    if 0 <= x <= 200:
-        y = 1
-    elif 200 < x <= 250:
-        y = (-1 / 50) * x + 5
+# Wall distance
+def calculate_dom_near_wall(dist):
+    if 0 <= dist <= 200:
+        dom = 1
+    elif 200 < dist <= 250:
+        dom = (-1 / 50) * dist + 5
     else:
-        y = 0
-    print(y)
+        dom = 0
+    return dom
 
 
-def calculate_dom_medium_wall(x):
-    if 200 <= x <= 300:
-        y = (1 / 100) * x - 2
-    elif 300 < x <= 400:
-        y = (-1 / 100) * x + 4
+def calculate_dom_medium_wall(dist):
+    if 200 <= dist <= 300:
+        dom = (1 / 100) * dist - 2
+    elif 300 < dist <= 400:
+        dom = (-1 / 100) * dist + 4
     else:
-        y = 0
-    return y
+        dom = 0
+    return dom
 
 
-def calculate_dom_far_wall(x):
-    if 350 < x <= 450:
-        y = (1 / 100) * x - 3.5
-    elif x > 450:
-        y = 1
+def calculate_dom_far_wall(dist):
+    if 350 < dist <= 450:
+        dom = (1 / 100) * dist - 3.5
+    elif dist > 450:
+        dom = 1
     else:
-        y = 0
-    return y
+        dom = 0
+    return dom
 
 
-# Degree of membership functions for speed
-def calculate_dom_low_speed(x):
-    if 0 <= x <= 4:
-        y = 1
-    elif 4 < x <= 6:
-        y = (-1 / 2) * x + 3
+# spd
+def calculate_dom_low_spd(spd):
+    if 0 <= spd <= 4:
+        dom = 1
+    elif 4 < spd <= 6:
+        dom = (-1 / 2) * spd + 3
     else:
-        y = 0
-    return y
+        dom = 0
+    return dom
 
 
-def calculate_dom_medium_speed(x):
-    if 5 <= x <= 6:
-        y = x - 5
-    elif 6 <= x <= 7:
-        y = 1
-    elif 7 <= x <= 8:
-        y = -x + 8
+def calculate_dom_medium_spd(spd):
+    if 5 <= spd <= 6:
+        dom = spd - 5
+    elif 6 <= spd <= 7:
+        dom = 1
+    elif 7 <= spd <= 8:
+        dom = -spd + 8
     else:
-        y = 0
-    return y
+        dom = 0
+    return dom
 
 
-def calculate_dom_fast_speed(x):
-    if 7 <= x <= 10:
-        y = (1 / 3) * x - (7 / 3)
-    elif x >= 10:
-        y = 1
+def calculate_dom_fast_spd(spd):
+    if 7 <= spd <= 10:
+        dom = (1 / 3) * spd - (7 / 3)
+    elif spd >= 10:
+        dom = 1
     else:
-        y = 0
-    return y
+        dom = 0
+    return dom
