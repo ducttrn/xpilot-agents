@@ -6,9 +6,9 @@ class TurnAngle:
         self.large_dom = self.calculate_dom_large_angle()
 
     def calculate_dom_small_angle(self):
-        if 0 <= self.angle < 15:
+        if 0 <= self.angle <= 15:
             dom = 1
-        elif 15 <= self.angle <= 25:
+        elif 15 < self.angle <= 25:
             dom = (-1 / 5) * self.angle + 4
         else:
             dom = 0
