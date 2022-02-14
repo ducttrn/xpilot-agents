@@ -11,6 +11,8 @@ def AI_loop():
     ai.thrust(0)
     ai.turnLeft(0)
     ai.turnRight(0)
+    ai.setTurnSpeed(20)
+    ai.setPower(35)
 
     # Wall Avoidance
     tracking = int(ai.SelfTrackingDeg())
@@ -43,6 +45,22 @@ def AI_loop():
     bullet_angle = TurnAngle(bullet_ang)
     bullet_danger = calculate_bullet_danger(bullet_dist, bullet_angle)
 
+    heading = int(ai.selfHeadingDeg())
+    left_wall = ai.wallFeeler(2000, heading + 90)
+    right_wall = ai.wallFeeler(2000, heading - 90)
+    front_wall = ai.wallFeeler(2000, heading)
+    max_rating = max(wall_danger, enemy_chance, bullet_danger)
+    if wall_danger == max_rating:
+        if left_wall <= right_wall:
+            ai.turnRight(1)
+        else:
+            ai.turnLeft(1)
+        if front_wall > 300:
+            ai.thrust(1)
+    elif enemy_chance == max_rating:
+        pass
+    else:
+        pass
 
 
 def calculate_wall_danger(wall_dist: WallDistance, bot_speed: Speed):
