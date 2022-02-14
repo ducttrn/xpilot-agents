@@ -64,7 +64,11 @@ def AI_loop():
             ai.thrust(1)
     # Offense
     elif enemy_chance == max_rating:
-        pass
+        enemy_deg = ai.lockHeadingDeg()
+        deg_diff = heading - enemy_deg
+        if deg_diff < 30:
+            ai.fireShot()
+
     # Defense
     else:
         pass
