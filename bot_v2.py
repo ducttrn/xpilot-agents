@@ -62,7 +62,7 @@ def AI_loop():
     elif bottom_wall < 100:
         ai.thrust(1)
         
-    if enemy_chance >= 50:
+    if enemy_chance >= 10:
         ai.fireShot()
 
 
@@ -84,6 +84,11 @@ def calculate_enemy_chance(enemy_angle: TurnAngle, enemy_distance: ObjectDistanc
     return calculate_centroid(low_enemy_chance_dom, avg_enemy_chance_dom, high_enemy_chance_dom)
 
 
+# Function to calculate the centroid of three aggregated outputs.
+# This is done in intervals of 10, and the crisp output returned is a number 0-100.
+# 30 is meant to represent 0+10+20, 180 is 30+40+50+60, and 340 is the sum of the rest of the numbers through 100.
+# This is divided by the amount of intervals each degree of membership had in the sum
+# (ex. low has 0, 10, and 20 so low's degree of membership is divided by 3).
 def calculate_centroid(low, medium, high):
     return (30 * low + 180 * medium + 340 * high) / (3 * low + 4 * medium + 4 * high)
 
