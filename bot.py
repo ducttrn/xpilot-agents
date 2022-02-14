@@ -23,10 +23,13 @@ def AI_loop():
 
     # Offense
     enemy_id = ai.closestShipId()
-    enemy_distance = ObjectDistance(ai.enemyDistanceId(enemy_id))
-    ai.lockClose()
-    enemy_angle = TurnAngle(abs(ai.selfHeadingDeg() - ai.lockHeadingDeg()))
-    enemy_chance = calculate_enemy_chance(enemy_angle, enemy_distance)
+    if enemy_id == -1:
+        enemy_chance = 0
+    else:
+        enemy_distance = ObjectDistance(ai.enemyDistanceId(enemy_id))
+        ai.lockClose()
+        enemy_angle = TurnAngle(abs(ai.selfHeadingDeg() - ai.lockHeadingDeg()))
+        enemy_chance = calculate_enemy_chance(enemy_angle, enemy_distance)
 
     # Defense
     bullet_xcoor = ai.closestItemX()
