@@ -53,6 +53,8 @@ def AI_loop():
     right_wall = ai.wallFeeler(2000, heading - 90)
     front_wall = ai.wallFeeler(2000, heading)
     max_rating = max(wall_danger, enemy_chance, bullet_danger)
+
+    # Wall Avoidance
     if wall_danger == max_rating:
         if left_wall <= right_wall:
             ai.turnRight(1)
@@ -60,8 +62,10 @@ def AI_loop():
             ai.turnLeft(1)
         if front_wall > 300:
             ai.thrust(1)
+    # Offense
     elif enemy_chance == max_rating:
         pass
+    # Defense
     else:
         pass
 
