@@ -60,7 +60,7 @@ def AI_loop():
     elif left_wall < 100:
         ai.thrust(1)
     elif bottom_wall < 100:
-        ai.thrust(1)
+        ai.thrust(1):
         
     if enemy_chance >= 10:
         ai.fireShot()
