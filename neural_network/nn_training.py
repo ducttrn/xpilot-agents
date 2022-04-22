@@ -3,11 +3,9 @@ import libpyAI as ai
 
 from genetic_algorithm import evolve_one_generation
 
-generation = 1
-count = 0
-check = 0
-rowCount = 2
-weights = []
+
+def convert_genes_to_weight(genes):
+    return (int(genes, 2) / 64 - 0.5) * 2
 
 
 def AI_loop():
@@ -17,44 +15,56 @@ def AI_loop():
     ai.turnLeft(0)
     ai.thrust(0)
 
-    global count
-    global check
-    global rowCount
+    global survival_time
+    global health_check
+    global row_count
     global weights
-    global generation
 
     # Count how long alive for fitness
     if ai.selfAlive() == 1:
-        count += 1
-        check = 0
+        survival_time += 1
+        health_check = 0
 
-    if ai.selfAlive() == 0 and check == 0 and rowCount < 514:
+    if ai.selfAlive() == 0 and health_check == 0 and row_count < 514:
         with open('nn_population.csv', newline='') as f:
             r = csv.reader(f)
             lines = list(r)
-            lines[rowCount - 1][1] = str(count)
+            lines[row_count - 1][1] = str(survival_time)
             writer = csv.writer(f)
             writer.writerows(lines)
 
-            chromosome = lines[rowCount - 1][0]
-            weights = [chromosome[i:i + 6] for i in range(0, len(chromosome), 6)]
+            chromosome = lines[row_count - 1][0]
+            weights = [
+                convert_genes_to_weight(chromosome[i:i + 6])
+                for i in range(0, len(chromosome), 6)
+            ]
 
-        rowCount += 1
-        check = 1
-        count = 0
+        row_count += 1
+        health_check = 1
+        survival_time = 0
 
-    elif ai.selfAlive() == 0 and check == 0 and rowCount == 514:
+    elif ai.selfAlive() == 0 and health_check == 0 and row_count == 514:
         evolve_one_generation('nn_population.csv', 'nn_ga_config.json')
-        with open('nn_population.csv', newline='') as f:
-            csv_reader = csv.reader(f)
-            line = next(csv_reader)
-            chromosome = line[0]
-            weights = [chromosome[i:i + 6] for i in range(0, len(chromosome), 6)]
-
-        rowCount = 2
-        count = 0
-        check = 1
-        generation += 1
+        weights = get_initial_weights()
+        row_count = 2
+        health_check = 1
+        survival_time = 0
 
 
-ai.start(AI_loop, ["-name", "NNBot", "-join", "localhost"])
+def get_initial_weights():
+    with open('nn_population.csv', newline='') as f:
+        csv_reader = csv.reader(f)
+        line = next(next(csv_reader))
+        return [
+            convert_genes_to_weight(line[0][i:i + 6])
+            for i in range(0, len(line[0]), 6)
+        ]
+
+
+if __name__ == "__main__":
+    survival_time = 0
+    health_check = 0
+    row_count = 2
+    weights = get_initial_weights()
+
+    ai.start(AI_loop, ["-name", "NNBot", "-join", "localhost"])
