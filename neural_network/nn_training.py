@@ -16,16 +16,16 @@ def AI_loop():
     ai.thrust(0)
 
     global survival_time
-    global health_check
+    global weights_updated
     global row_count
     global weights
 
     # Count how long alive for fitness
     if ai.selfAlive() == 1:
         survival_time += 1
-        health_check = 0
+        weights_updated = False
 
-    if ai.selfAlive() == 0 and health_check == 0 and row_count < 514:
+    if ai.selfAlive() == 0 and weights_updated is False and row_count < 514:
         with open('nn_population.csv', newline='') as f:
             r = csv.reader(f)
             lines = list(r)
@@ -40,14 +40,14 @@ def AI_loop():
             ]
 
         row_count += 1
-        health_check = 1
+        weights_updated = True
         survival_time = 0
 
-    elif ai.selfAlive() == 0 and health_check == 0 and row_count == 514:
+    elif ai.selfAlive() == 0 and weights_updated is False and row_count == 514:
         evolve_one_generation('nn_population.csv', 'nn_ga_config.json')
         weights = get_initial_weights()
         row_count = 2
-        health_check = 1
+        weights_updated = True
         survival_time = 0
 
 
@@ -63,7 +63,7 @@ def get_initial_weights():
 
 if __name__ == "__main__":
     survival_time = 0
-    health_check = 0
+    weights_updated = False
     row_count = 2
     weights = get_initial_weights()
 
