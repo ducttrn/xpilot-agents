@@ -6,28 +6,29 @@ class ObjectDistance:
         self.medium_dom = self.calculate_dom_medium_dist()
         self.far_dom = self.calculate_dom_far_dist()
 
-    def calculate_dom_near_dist(self):
-        if 0 <= self.dist <= 200:
+    def calculate_dom_near_dist(self, chromosome):
+        
+        if 0 <= self.dist <= int(chromosome[0:8], 2):
             dom = 1
-        elif 200 < self.dist <= 300:
-            dom = (-1 / 100) * self.dist + 3
+        elif int(chromosome[0:8], 2) < self.dist <= (int(chromosome[0:8], 2) + int(chromosome[9:16], 2)):
+            dom = ((int(chromosome[0:8], 2) + int(chromosome[9:16], 2)) - self.dist) * (1 / (int(chromosome[9:16], 2)))
         else:
             dom = 0
         return dom
 
-    def calculate_dom_medium_dist(self):
-        if 200 <= self.dist <= 300:
-            dom = (1 / 100) * self.dist - 2
-        elif 300 < self.dist <= 400:
-            dom = (-1 / 100) * self.dist + 4
+    def calculate_dom_medium_dist(self, chromosome):
+        if (int(chromosome[0:8], 2) + int(chromosome[33:40], 2)) <= self.dist <= (int(chromosome[0:8], 2) + int(chromosome[33:40], 2) + int(chromosome[17:24], 2)):
+            dom = (1 / int(chromosome[17:24], 2)) * (self.dist - (int(chromosome[0:8], 2) + int(chromosome[33:40], 2)))
+        elif (int(chromosome[0:8], 2) + int(chromosome[33:40], 2) + int(chromosome[17:24], 2)) < self.dist <= (int(chromosome[0:8], 2) + int(chromosome[33:40], 2) + int(chromosome[17:24], 2) + int(chromosome[17:24], 2)):
+            dom = 1 - ((1 / int(chromosome[17:24], 2)) * (self.dist - (int(chromosome[0:8],2) + int(chromosome[33:40],2) + int(chromosome[17:24], 2))))
         else:
             dom = 0
         return dom
 
-    def calculate_dom_far_dist(self):
-        if 350 <= self.dist < 450:
-            dom = (1 / 100) * self.dist - 7 / 2
-        elif 450 <= self.dist:
+    def calculate_dom_far_dist(self, chromosome):
+        if (int(chromosome[0:8],2) + int(chromosome[33:40],2) + int(chromosome[17:24],2) + int(chromosome[41:48],2)) <= self.dist < (int(chromosome[0:8],2) + int(chromosome[33:40],2) + int(chromosome[17:24],2) + int(chromosome[41:48],2) + int(chromosome[25:32],2)):
+            dom = (1 / int(chromosome[25:32],2)) * (self.dist - (int(chromosome[0:8],2) + int(chromosome[33:40],2) + int(chromosome[17:24],2) + int(chromosome[41:48],2)))
+        elif (int(chromosome[0:8],2) + int(chromosome[33:40],2) + int(chromosome[17:24],2) + int(chromosome[41:48],2) + int(chromosome[25:32],2)) <= self.dist:
             dom = 1
         else:
             dom = 0
