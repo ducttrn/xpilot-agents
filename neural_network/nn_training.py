@@ -61,6 +61,7 @@ def AI_loop():
     global weights_updated
     global row_count
     global weights
+    global game_score
 
     # Count how long alive for fitness
     if ai.selfAlive() == 1:
@@ -107,6 +108,10 @@ def AI_loop():
         turn = -1
     ai.turn(int(turn * 20))
 
+    if ai.selfScore() > game_score:
+        game_score = ai.selfScore()
+        survival_time += 20
+
 
 def get_initial_weights():
     with open('nn_population.csv', newline='') as f:
@@ -123,5 +128,6 @@ if __name__ == "__main__":
     weights_updated = False
     row_count = 2
     weights = get_initial_weights()
+    game_score = 0
 
     ai.start(AI_loop, ["-name", "NNBot", "-join", "localhost"])
