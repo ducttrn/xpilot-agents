@@ -1,3 +1,4 @@
 .idea
 .vscode
 draft.py
+__pycache__/
