@@ -1,11 +1,19 @@
 import csv
-import libpyAI as ai
+import math
 
+import libpyAI as ai
 from genetic_algorithm import evolve_one_generation
 
 
 def convert_genes_to_weight(genes):
     return (int(genes, 2) / 64 - 0.5) * 2
+
+
+def convert_angle(angle):
+    if 0 <= angle <= 180:
+        return angle / 180
+    elif 180 <= angle <= 360:
+        return (angle - 360) / 180
 
 
 def AI_loop():
@@ -14,6 +22,40 @@ def AI_loop():
     ai.turnRight(0)
     ai.turnLeft(0)
     ai.thrust(0)
+
+    heading = convert_angle(int(ai.selfHeadingDeg()))
+
+    vel = ai.selfSpeed() / 15
+    reload_time = int(ai.selfReload()) / 12
+
+    N = ai.wallFeeler(1000, heading) / 1000
+    S = ai.wallFeeler(1000, heading - 180) / 1000
+    W = ai.wallFeeler(1000, heading - 90) / 1000
+    E = ai.wallFeeler(1000, heading + 90) / 1000
+    NW = ai.wallFeeler(1000, heading + 45) / 1000
+    NE = ai.wallFeeler(1000, heading - 45) / 1000
+    SW = ai.wallFeeler(1000, heading + 135) / 1000
+    SE = ai.wallFeeler(1000, heading - 135) / 1000
+
+    enemy_dist = ai.enemyDistance(0) / 1000
+    enemy_dir = convert_angle(ai.aimdir(0))
+    enemy_heading = convert_angle(ai.enemyHeadingDeg(0))
+
+    enemy_reload_time = ai.enemyReload(0) / 12
+    bullet_dist = ai.shotDist(0) / 1000
+
+    # MDB direction from Self
+    x1 = ai.shotX(0)
+    y1 = ai.shotY(0)
+    x2 = ai.selfX()
+    y2 = ai.selfY()
+    delta_x = x2 - x1
+    delta_y = y2 - y1
+    mdb_angle = convert_angle((math.atan2(delta_y, delta_x) * 180 / math.pi) + 180)  # 0-360 with +180
+
+    bias = 1
+    data = [heading, vel, reload_time, N, S, W, E, NW, NE, SW, SE, enemy_dist,
+            enemy_dir, enemy_heading, enemy_reload_time, bullet_dist, mdb_angle, bias]
 
     global survival_time
     global weights_updated
@@ -49,6 +91,21 @@ def AI_loop():
         row_count = 2
         weights_updated = True
         survival_time = 0
+
+    thrust = sum([i*j for i, j in zip(data, weights[:18])])
+    if thrust > 0:
+        ai.thrust(1)
+
+    shoot = sum([i*j for i, j in zip(data, weights[18:36])])
+    if shoot > 0:
+        ai.fireShot()
+
+    turn = sum([i*j for i, j in zip(data, weights[37:])]) / 15
+    if turn > 1:
+        turn = 1
+    elif turn < -1:
+        turn = -1
+    ai.turn(int(turn * 20))
 
 
 def get_initial_weights():
