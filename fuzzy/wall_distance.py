@@ -7,7 +7,7 @@ class WallDistance:
         self.far_dom = self.calculate_dom_far_wall()
 
     def calculate_dom_near_wall(self, chromosome):
-        if 0 <= self.dist <= int(chromosome[0:8], 2):
+        if 0 <= self.dist <= int(chromosome[49:57], 2):
             dom = 1
         elif int(chromosome[49:57], 2) < self.dist <= (int(chromosome[49:57], 2) + int(chromosome[58:65], 2)):
             dom = ((int(chromosome[49:57], 2) + int(chromosome[58:65], 2)) - self.dist) * (1 / (int(chromosome[58:65], 2)))
