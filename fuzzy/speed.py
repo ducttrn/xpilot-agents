@@ -6,30 +6,28 @@ class Speed:
         self.medium_dom = self.calculate_dom_medium_spd()
         self.fast_dom = self.calculate_dom_fast_spd()
 
-    def calculate_dom_low_spd(self):
-        if 0 <= self.spd <= 4:
+    def calculate_dom_low_spd(self, chromosome):
+        if 0 <= self.spd <= int(chromosome[98:100], 2):
             dom = 1
-        elif 4 < self.spd <= 6:
-            dom = (-1 / 2) * self.spd + 3
+        elif int(chromosome[98:100], 2) < self.spd <= (int(chromosome[98:100], 2) + int(chromosome[101:103], 2)):
+            dom = ((int(chromosome[98:100], 2) + int(chromosome[101:103], 2)) - self.spd) * (1 / (int(chromosome[101:103], 2)))
         else:
             dom = 0
         return dom
 
-    def calculate_dom_medium_spd(self):
-        if 5 <= self.spd <= 6:
-            dom = self.spd - 5
-        elif 6 <= self.spd <= 7:
-            dom = 1
-        elif 7 <= self.spd <= 8:
-            dom = - self.spd + 8
+    def calculate_dom_medium_spd(self, chromosome):
+        if (int(chromosome[98:100], 2) + int(chromosome[110:112], 2)) <= self.spd <= (int(chromosome[98:100], 2) + int(chromosome[110:112], 2) + int(chromosome[104:106], 2)):
+            dom = (1 / int(chromosome[104:106], 2)) * (self.spd - (int(chromosome[98:100], 2) + int(chromosome[110:112], 2)))
+        elif (int(chromosome[98:100], 2) + int(chromosome[110:112], 2) + int(chromosome[104:106], 2)) < self.spd <= (int(chromosome[98:100], 2) + int(chromosome[110:112], 2) + int(chromosome[104:106], 2) + int(chromosome[104:106], 2)):
+            dom = 1 - ((1 / int(chromosome[104:106], 2)) * (self.spd - (int(chromosome[98:100],2) + int(chromosome[110:112],2) + int(chromosome[104:106], 2))))
         else:
             dom = 0
         return dom
 
-    def calculate_dom_fast_spd(self):
-        if 7 <= self.spd <= 10:
-            dom = (1 / 3) * self.spd - (7 / 3)
-        elif self.spd >= 10:
+    def calculate_dom_fast_spd(self, chromosome):
+        if (int(chromosome[98:100],2) + int(chromosome[110:112],2) + int(chromosome[104:106],2) + int(chromosome[113:115],2)) <= self.spd < (int(chromosome[98:100],2) + int(chromosome[110:112],2) + int(chromosome[104:106],2) + int(chromosome[113:115],2) + int(chromosome[107:109],2)):
+            dom = (1 / int(chromosome[107:109],2)) * (self.spd - (int(chromosome[98:100],2) + int(chromosome[110:112],2) + int(chromosome[104:106],2) + int(chromosome[113:115],2)))
+        elif (int(chromosome[98:100],2) + int(chromosome[110:112],2) + int(chromosome[104:106],2) + int(chromosome[113:115],2) + int(chromosome[107:109],2)) <= self.spd:
             dom = 1
         else:
             dom = 0

@@ -25,9 +25,9 @@ class WallDistance:
         return dom
 
     def calculate_dom_far_wall(self, chromosome):
-        if (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[100:107],2)) <= self.dist < (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[100:107],2) + int(chromosome[74:81],2)):
-            dom = (1 / int(chromosome[74:81],2)) * (self.dist - (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[100:107],2)))
-        elif (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[100:107],2) + int(chromosome[74:81],2)) <= self.dist:
+        if (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[90:97],2)) <= self.dist < (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[90:97],2) + int(chromosome[74:81],2)):
+            dom = (1 / int(chromosome[74:81],2)) * (self.dist - (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[90:97],2)))
+        elif (int(chromosome[49:57],2) + int(chromosome[82:89],2) + int(chromosome[66:73],2) + int(chromosome[90:97],2) + int(chromosome[74:81],2)) <= self.dist:
             dom = 1
         else:
             dom = 0
