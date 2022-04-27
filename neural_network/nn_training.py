@@ -13,6 +13,7 @@ def convert_genes_to_weight(genes):
 
 
 def convert_angle(angle):
+    # Normalize angle to [-1, 1]
     if 0 <= angle <= 180:
         return angle / 180
     elif 180 <= angle <= 360:
@@ -26,6 +27,7 @@ def AI_loop():
     ai.setTurnSpeed(20)
     ai.setPower(35)
 
+    # All parameters are normalized to [-1, 1]
     heading = int(ai.selfHeadingDeg())
     vel = ai.selfSpeed() / 15
     reload_time = int(ai.selfReload()) / 12
@@ -94,13 +96,18 @@ def AI_loop():
             current_row += 1
 
         elif current_row == population_size:
+            # Reach last chromosome in the population then evolve
             evolve_one_generation('nn_population.csv', 'nn_ga_config.json')
             weights = get_initial_weights()
             current_row = 1
 
+        # Mark weights as updated to prevent multiple updates
+        # due to the bot remains dead for a few frames
         weights_updated = True
         survival_time = 0
 
+    # Forward Propagate in a Neural Network
+    # with 18 inputs and 3 outputs, 0 hidden layers
     thrust = sum([i * j for i, j in zip(data, weights[:18])])
     if thrust > 0:
         ai.thrust(1)
@@ -118,7 +125,7 @@ def AI_loop():
 
     if ai.selfScore() > game_score:
         game_score = ai.selfScore()
-        survival_time += 20
+        survival_time += 100
 
 
 def get_initial_weights():
@@ -135,6 +142,7 @@ def get_initial_weights():
 if __name__ == "__main__":
     survival_time = 0
     weights_updated = False
+    # Start from first chromosome
     weights = get_initial_weights()
     current_row = 1
     game_score = 0
