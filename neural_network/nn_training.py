@@ -65,7 +65,7 @@ def AI_loop():
         bullet_dist, mdb_angle, bias
     ]
 
-    global survival_time
+    global fitness
     global weights_updated
     global current_row
     global weights
@@ -73,14 +73,14 @@ def AI_loop():
 
     # Count how long alive for fitness
     if ai.selfAlive() == 1:
-        survival_time += 1
+        fitness += 1
         weights_updated = False
 
     if ai.selfAlive() == 0 and weights_updated is False:
         with open('nn_population.csv', 'r') as f:
             r = csv.reader(f)
             lines = list(r)
-            lines[current_row][1] = str(survival_time)
+            lines[current_row][1] = str(fitness)
 
         with open('nn_population.csv', 'w') as f:
             writer = csv.writer(f)
@@ -104,7 +104,7 @@ def AI_loop():
         # Mark weights as updated to prevent multiple updates
         # due to the bot remains dead for a few frames
         weights_updated = True
-        survival_time = 0
+        fitness = 0
 
     # Forward Propagate in a Neural Network
     # with 18 inputs and 3 outputs, 0 hidden layers
@@ -125,7 +125,7 @@ def AI_loop():
 
     if ai.selfScore() > game_score:
         game_score = ai.selfScore()
-        survival_time += 100
+        fitness += 100
 
 
 def get_initial_weights():
@@ -140,7 +140,7 @@ def get_initial_weights():
 
 
 if __name__ == "__main__":
-    survival_time = 0
+    fitness = 0
     weights_updated = False
     # Start from first chromosome
     weights = get_initial_weights()
