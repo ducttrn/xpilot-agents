@@ -44,7 +44,6 @@ class Population:
                 weights=sqr_weights,
                 k=2
             )
-            print(parent_1.genes)
             crossover_result.extend(self.crossover_chromosomes(parent_1, parent_2, crossover_probability))
         return crossover_result
 
