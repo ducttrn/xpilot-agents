@@ -51,10 +51,15 @@ class Population:
         offspring_1 = Chromosome()
         offspring_2 = Chromosome()
         if random.random() < crossover_probability:
-            # Crossover happens
-            crossover_point = random.randint(1, self.chromosome_len - 2)
-            offspring_1.genes = parent_1.genes[:crossover_point] + parent_2.genes[crossover_point:]
-            offspring_2.genes = parent_2.genes[:crossover_point] + parent_1.genes[crossover_point:]
+            # Double Crossover happens
+            crossover_point_1 = random.randint(1, self.chromosome_len // 2)
+            crossover_point_2 = random.randint(self.chromosome_len // 2 + 1, self.chromosome_len - 1)
+            offspring_1.genes = parent_1.genes[:crossover_point_1] \
+                                + parent_2.genes[crossover_point_1:crossover_point_2] \
+                                + parent_1.genes[crossover_point_2:]
+            offspring_2.genes = parent_2.genes[:crossover_point_1] \
+                                + parent_1.genes[crossover_point_1:crossover_point_2] \
+                                + parent_2.genes[crossover_point_2:]
         else:
             offspring_1.genes = parent_1.genes
             offspring_2.genes = parent_2.genes
