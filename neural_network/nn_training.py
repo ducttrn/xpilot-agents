@@ -70,6 +70,7 @@ def AI_loop():
     global current_row
     global weights
     global game_score
+    global generation
 
     # Count how long alive for fitness
     if ai.selfAlive() == 1:
@@ -100,6 +101,8 @@ def AI_loop():
             evolve_one_generation('nn_population.csv', 'nn_ga_config.json')
             weights = get_initial_weights()
             current_row = 1
+            generation += 1
+            print(generation)
 
         # Mark weights as updated to prevent multiple updates
         # due to the bot remains dead for a few frames
@@ -146,5 +149,6 @@ if __name__ == "__main__":
     weights = get_initial_weights()
     current_row = 1
     game_score = 0
+    generation = 0
 
     ai.start(AI_loop, ["-name", "NNBot", "-join", "localhost"])
