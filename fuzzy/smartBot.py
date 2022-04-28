@@ -1,5 +1,6 @@
 #Import libraries, including the degree of membership libraries we created
 import math
+import csv
 import libpyAI as ai
 from object_distance import ObjectDistance
 from turn_angle import TurnAngle
@@ -34,15 +35,15 @@ def AI_loop():
     # Wall Avoidance
     tracking = int(ai.selfTrackingDeg())
     track_wall = ai.wallFeeler(2000, tracking)
-    wall_dist = WallDistance(track_wall)
-    bot_speed = Speed(ai.selfSpeed())
+    wall_dist = WallDistance(track_wall, chromosome)
+    bot_speed = Speed(ai.selfSpeed(), chromosome)
     wall_danger = calculate_wall_danger(wall_dist, bot_speed)
 
     # Offense
     enemy_id = ai.closestShipId()
-    enemy_distance = ObjectDistance(ai.enemyDistanceId(enemy_id))
+    enemy_distance = ObjectDistance(ai.enemyDistanceId(enemy_id), chromosome)
     ai.lockClose()
-    enemy_angle = TurnAngle(abs(ai.selfHeadingDeg() - ai.lockHeadingDeg()))
+    enemy_angle = TurnAngle(abs(ai.selfHeadingDeg() - ai.lockHeadingDeg()), chromosome)
     enemy_chance = calculate_enemy_chance(enemy_angle, enemy_distance)
 
     # Defense
@@ -60,8 +61,8 @@ def AI_loop():
     
     # Give inputs and calculate bullet danger based off of aggregation and defuzzification functions
     # at the bottom of this code
-    bullet_dist = ObjectDistance(bullet_dis)
-    bullet_angle = TurnAngle(bullet_ang)
+    bullet_dist = ObjectDistance(bullet_dis, chromosome)
+    bullet_angle = TurnAngle(bullet_ang, chromosome)
     bullet_danger = calculate_bullet_danger(bullet_dist, bullet_angle)
 
     heading = int(ai.selfHeadingDeg())

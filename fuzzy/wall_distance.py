@@ -1,10 +1,10 @@
 #Class to calculate degrees of membership for wall distance. Points that are not 0 or 1 are calculated #based off of slope.
 class WallDistance:
-    def __init__(self, dist):
+    def __init__(self, dist, chromosome):
         self.dist = dist
-        self.near_dom = self.calculate_dom_near_wall()
-        self.medium_dom = self.calculate_dom_medium_wall()
-        self.far_dom = self.calculate_dom_far_wall()
+        self.near_dom = self.calculate_dom_near_wall(chromosome)
+        self.medium_dom = self.calculate_dom_medium_wall(chromosome)
+        self.far_dom = self.calculate_dom_far_wall(chromosome)
 
     def calculate_dom_near_wall(self, chromosome):
         if 0 <= self.dist <= int(chromosome[49:57], 2):

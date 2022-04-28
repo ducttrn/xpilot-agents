@@ -1,10 +1,10 @@
 #Class to calculate degrees of membership for speed. Points that are not 0 or 1 are calculated #based off of slope.
 class Speed:
-    def __init__(self, spd):
+    def __init__(self, spd, chromosome):
         self.spd = spd
-        self.slow_dom = self.calculate_dom_low_spd()
-        self.medium_dom = self.calculate_dom_medium_spd()
-        self.fast_dom = self.calculate_dom_fast_spd()
+        self.slow_dom = self.calculate_dom_low_spd(chromosome)
+        self.medium_dom = self.calculate_dom_medium_spd(chromosome)
+        self.fast_dom = self.calculate_dom_fast_spd(chromosome)
 
     def calculate_dom_low_spd(self, chromosome):
         if 0 <= self.spd <= int(chromosome[98:100], 2):
