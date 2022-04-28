@@ -5,6 +5,23 @@ from object_distance import ObjectDistance
 from turn_angle import TurnAngle
 from wall_distance import WallDistance
 from speed import Speed
+from genetic_algorithm import evolve_one_generation
+global generation
+generation = 1
+global count
+count = 0
+global check
+check = 0
+global rowCount
+rowCount = 1
+global MAX_SPEED
+global TRACK_WALL_DIST
+global WALL_DIST
+with open('fuzzy_population.csv', newline = '') as f:
+    csv_reader = csv.reader(f)
+    csv_headings = next(csv_reader)
+    line = next(csv_reader)
+    chromosome = line[0]
 
 def AI_loop():
     # Release keys
@@ -63,34 +80,61 @@ def AI_loop():
             ai.thrust(1)
     # Fire enemy chance rating. Statements were made so the bot turns in the direction which allows it to aim at the enemy quickest               
     elif enemy_chance == max_rating:
-       enemy_deg = ai.lockHeadingDeg()
+        enemy_deg = ai.lockHeadingDeg()
        #Shoot if enemy is within 40 degrees of heading 
-       if abs(heading - enemy_deg) < 40:
-           ai.fireShot() 	
-       elif heading < 180 and enemy_deg < 180:
-           if heading > enemy_deg:
-           	ai.turnRight(1)
-           else:
-           	ai.turnLeft(1)
-       elif heading > 180 and enemy_deg > 180:
-           if enemy_deg > heading:
-           	ai.turnLeft(1)
-           else:
-           	ai.turnRight(1)
-       elif heading > 180 and enemy_deg < 180:
-           if enemy_deg > (heading - 180):
-           	ai.turnRight(1)
-           else:
-           	ai.turnLeft(1)
-       else:
-           if enemy_deg < (heading+180):
-           	ai.turnLeft(1)
-           else:
-           	ai.turnRight(1)     
+        if abs(heading - enemy_deg) < 40:
+            ai.fireShot() 	
+        elif heading < 180 and enemy_deg < 180:
+            if heading > enemy_deg:
+                ai.turnRight(1)
+            else:
+                ai.turnLeft(1)
+        elif heading > 180 and enemy_deg > 180:
+            if enemy_deg > heading:
+                ai.turnLeft(1)
+            else:
+                ai.turnRight(1)
+        elif heading > 180 and enemy_deg < 180:
+            if enemy_deg > (heading - 180):
+                ai.turnRight(1)
+            else:
+                ai.turnLeft(1)
+        else:
+            if enemy_deg < (heading+180):
+                ai.turnLeft(1)
+            else:
+                ai.turnRight(1)     
     # If bullet danger is max, thrust pilot to avoid danger. Sets cap for speed so the pilot doesn't lose control   
     elif bullet_danger == max_rating:
         if ai.selfSpeed() < 6:
             ai.thrust(1)
+
+    if ai.selfAlive() == 1:    
+        count += 1
+        check = 0
+   
+    if ai.selfAlive() == 0 and check == 0 and rowCount < 51:
+        r = csv.reader(open('population.csv'))
+        lines = list(r)
+        lines[rowCount][1] = str(count)
+        writer = csv.writer(open('population.csv', 'w', newline = ''))
+        writer.writerows(lines)
+        chromosome = lines[rowCount][0]
+        rowCount += 1
+        check = 1
+        count = 0
+
+    elif ai.selfAlive() == 0 and check == 0 and rowCount == 51:
+        evolve_one_generation()
+        with open('fuzzy_population.csv', newline = '') as f:
+            csv_reader = csv.reader(f)
+            csv_headings = next(csv_reader)
+            line = next(csv_reader)
+            chromosome = line[0]
+        rowCount = 1
+        count = 0
+        check = 1
+        generation += 1
 
 # Functions for aggregation and defuzzification
 # Clipping is done by taking the minimum degree of membership for two variables (ex. fast bot speed with 0.2 and near wall 0.4 would give degree of membership 0.2). Since three degrees of membership are given for each danger rating (high, avg, and low danger) the max of the three is returned.
