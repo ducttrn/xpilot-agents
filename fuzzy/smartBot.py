@@ -15,9 +15,7 @@ global check
 check = 0
 global rowCount
 rowCount = 1
-global MAX_SPEED
-global TRACK_WALL_DIST
-global WALL_DIST
+global chromosome
 with open('fuzzy_population.csv', newline = '') as f:
     csv_reader = csv.reader(f)
     csv_headings = next(csv_reader)
@@ -26,6 +24,12 @@ with open('fuzzy_population.csv', newline = '') as f:
 
 def AI_loop():
     # Release keys
+    global generation
+    global count 
+    global check
+    global rowCount
+    global chromosome
+    global generation
     ai.thrust(0)
     ai.turnLeft(0)
     ai.turnRight(0)
@@ -138,7 +142,11 @@ def AI_loop():
         generation += 1
 
 # Functions for aggregation and defuzzification
-# Clipping is done by taking the minimum degree of membership for two variables (ex. fast bot speed with 0.2 and near wall 0.4 would give degree of membership 0.2). Since three degrees of membership are given for each danger rating (high, avg, and low danger) the max of the three is returned.
+
+# Clipping is done by taking the minimum degree of membership for two variables (ex. fast bot speed with 0.2 and near wall 0.4 would 
+# give degree of membership 0.2). Since three degrees of membership are given for each danger rating (high, avg, and low danger) the
+# max of the three is returned.
+
 def calculate_wall_danger(wall_dist: WallDistance, bot_speed: Speed):
     wall_high_danger_dom_one = min(wall_dist.near_dom, bot_speed.fast_dom)
     wall_high_danger_dom_two = min(wall_dist.medium_dom, bot_speed.fast_dom)
