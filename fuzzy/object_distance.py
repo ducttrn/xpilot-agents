@@ -1,10 +1,10 @@
 #Class to calculate degrees of membership for object distance. Points that are not 0 or 1 are calculated #based off of slope.
 class ObjectDistance:
-    def __init__(self, dist):
+    def __init__(self, dist, chromosome):
         self.dist = dist
-        self.near_dom = self.calculate_dom_near_dist()
-        self.medium_dom = self.calculate_dom_medium_dist()
-        self.far_dom = self.calculate_dom_far_dist()
+        self.near_dom = self.calculate_dom_near_dist(chromosome)
+        self.medium_dom = self.calculate_dom_medium_dist(chromosome)
+        self.far_dom = self.calculate_dom_far_dist(chromosome)
 
     def calculate_dom_near_dist(self, chromosome):
         

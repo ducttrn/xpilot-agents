@@ -1,10 +1,10 @@
 #Class to calculate degrees of membership for turn angle. Points that are not 0 or 1 are calculated #based off of slope.
 class TurnAngle:
-    def __init__(self, angle):
+    def __init__(self, angle, chromosome):
         self.angle = angle
-        self.small_dom = self.calculate_dom_small_angle()
-        self.medium_dom = self.calculate_dom_medium_angle()
-        self.large_dom = self.calculate_dom_large_angle()
+        self.small_dom = self.calculate_dom_small_angle(chromosome)
+        self.medium_dom = self.calculate_dom_medium_angle(chromosome)
+        self.large_dom = self.calculate_dom_large_angle(chromosome)
 
     def calculate_dom_small_angle(self, chromosome):
         if 0 <= self.angle <= int(chromosome[116:120], 2):
