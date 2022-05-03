@@ -77,6 +77,9 @@ def AI_loop():
         fitness += 1
         weights_updated = False
 
+    if ai.selfAlive() == 1 and ai.selfSpeed() == 0:
+        fitness -= 1
+
     if ai.selfAlive() == 0 and weights_updated is False:
         with open('nn_population.csv', 'r') as f:
             r = csv.reader(f)
