@@ -14,7 +14,7 @@ count = 0
 global check
 check = 0
 global rowCount
-rowCount = 1
+rowCount = 2
 global chromosome
 with open('fuzzy_population.csv', newline = '') as f:
     csv_reader = csv.reader(f)
@@ -24,12 +24,11 @@ with open('fuzzy_population.csv', newline = '') as f:
 
 def AI_loop():
     # Release keys
-    global generation
+    global chromosome
+    global generation 
     global count 
     global check
     global rowCount
-    global chromosome
-    global generation
     ai.thrust(0)
     ai.turnLeft(0)
     ai.turnRight(0)
@@ -45,44 +44,82 @@ def AI_loop():
 
     # Offense
     enemy_id = ai.closestShipId()
-    enemy_distance = ObjectDistance(ai.enemyDistanceId(enemy_id), chromosome)
-    ai.lockClose()
-    enemy_angle = TurnAngle(abs(ai.selfHeadingDeg() - ai.lockHeadingDeg()), chromosome)
-    enemy_chance = calculate_enemy_chance(enemy_angle, enemy_distance)
+    if enemy_id != -1:
+        enemy_distance = ObjectDistance(ai.enemyDistanceId(enemy_id), chromosome)
+        ai.lockClose()
+        enemy_angle = TurnAngle(abs(ai.selfHeadingDeg() - ai.lockHeadingDeg()), chromosome)
+        enemy_chance = calculate_enemy_chance(enemy_angle, enemy_distance)
+    else:
+        enemy_chance = 0
+    
 
     # Defense
     bullet_xcoor = ai.closestItemX()
     bullet_ycoor = ai.closestItemY()
     ship_xcoor = ai.selfX()
     ship_ycoor = ai.selfY()
-
-    # Calculating Euclidean dist between ship and bullet
-    bullet_dis = math.dist([bullet_xcoor, bullet_ycoor], [ship_xcoor, ship_ycoor])
-
-    # Calculating the angle between the ship and the bullet
-    alpha = abs(ship_xcoor - bullet_xcoor) / bullet_dis
-    bullet_ang = math.degrees(math.asin(alpha))
     
-    # Give inputs and calculate bullet danger based off of aggregation and defuzzification functions
-    # at the bottom of this code
-    bullet_dist = ObjectDistance(bullet_dis, chromosome)
-    bullet_angle = TurnAngle(bullet_ang, chromosome)
-    bullet_danger = calculate_bullet_danger(bullet_dist, bullet_angle)
+    if bullet_xcoor == -1 or bullet_ycoor == -1:
+        bullet_danger = 0
+    else:       
+
+        # Calculating Euclidean dist between ship and bullet
+        bullet_dis = math.dist([bullet_xcoor, bullet_ycoor], [ship_xcoor, ship_ycoor])
+
+        # Calculating the angle between the ship and the bullet
+        alpha = abs(ship_xcoor - bullet_xcoor) / bullet_dis
+        bullet_ang = math.degrees(math.asin(alpha))
+    
+        # Give inputs and calculate bullet danger based off of aggregation and defuzzification functions
+        # at the bottom of this code
+        bullet_dist = ObjectDistance(bullet_dis, chromosome)
+        bullet_angle = TurnAngle(bullet_ang, chromosome)
+        bullet_danger = calculate_bullet_danger(bullet_dist, bullet_angle)
 
     heading = int(ai.selfHeadingDeg())
     left_wall = ai.wallFeeler(2000, heading + 90)
     right_wall = ai.wallFeeler(2000, heading - 90)
     front_wall = ai.wallFeeler(2000, heading)
-    max_rating = max(wall_danger, enemy_chance, bullet_danger)
+    topWall = ai.wallFeeler(2000,90)
+    bottomWall = ai.wallFeeler(2000,heading-180)
+    
+    max_rating = max(wall_danger, bullet_danger, enemy_chance)
+    
+    if wall_danger == bullet_danger == enemy_chance:
+        wall_danger += 1
+    	
+    print("wall danger: " + str(wall_danger), "bullet danger: " + str(bullet_danger), "enemy chance: " + str(enemy_chance))
     
     # Fire wall danger with top priority
-    if wall_danger == max_rating:   
-        if left_wall <= right_wall:
+    if wall_danger == max_rating:  
+          WALL_DIST = 350 
+          if track_wall < WALL_DIST and left_wall < right_wall:
             ai.turnRight(1)
-        else:
+          elif track_wall < WALL_DIST and leftWall >= right_wall:
             ai.turnLeft(1)
-        if front_wall > 300:
+          elif left_wall < right_wall:
+            ai.turnRight(1)
+          else:
+            ai.turnLeft(1)
+ 
+          #Thrust rules  
+          if ai.selfSpeed() == 0 and front_wall < 300:
+            ai.thrust(0)  
+          elif front_wall > WALL_DIST+350 and track_wall < WALL_DIST and ai.selfSpeed() < 10:
             ai.thrust(1)
+          elif front_wall > WALL_DIST and ai.selfSpeed() < 6:
+            ai.thrust(1)
+            ai.fireShot()
+          elif topWall < 100:
+            ai.thrust(1)
+          elif right_wall < 100:
+            ai.thrust(1)
+          elif left_wall < 100: 
+            ai.thrust(1)
+          elif bottomWall < 100:
+            ai.thrust(1)
+          else:
+            ai.fireShot()
     # Fire enemy chance rating. Statements were made so the bot turns in the direction which allows it to aim at the enemy quickest               
     elif enemy_chance == max_rating:
         enemy_deg = ai.lockHeadingDeg()
@@ -118,35 +155,33 @@ def AI_loop():
         count += 1
         check = 0
    
-    if ai.selfAlive() == 0 and check == 0 and rowCount < 51:
-        r = csv.reader(open('population.csv'))
-        lines = list(r)
-        lines[rowCount][1] = str(count)
-        writer = csv.writer(open('population.csv', 'w', newline = ''))
-        writer.writerows(lines)
-        chromosome = lines[rowCount][0]
-        rowCount += 1
-        check = 1
-        count = 0
+    if ai.selfAlive() == 0 and check == 0 and rowCount < 52:
+    	
+    	r = csv.reader(open('fuzzy_population.csv'))
+    	lines = list(r)
+    	lines[rowCount - 1][1] = str(count)
+    	writer = csv.writer(open('fuzzy_population.csv', 'w', newline = ''))
+    	writer.writerows(lines)
+    	chromosome = lines[rowCount - 1][0]
+    	rowCount += 1
+    	check = 1
+    	count = 0
 
-    elif ai.selfAlive() == 0 and check == 0 and rowCount == 51:
+    elif ai.selfAlive() == 0 and check == 0 and rowCount == 52:
         evolve_one_generation()
         with open('fuzzy_population.csv', newline = '') as f:
             csv_reader = csv.reader(f)
             csv_headings = next(csv_reader)
             line = next(csv_reader)
             chromosome = line[0]
-        rowCount = 1
+        rowCount = 2
         count = 0
         check = 1
         generation += 1
+        print('Generation ' + str(generation))
 
 # Functions for aggregation and defuzzification
-
-# Clipping is done by taking the minimum degree of membership for two variables (ex. fast bot speed with 0.2 and near wall 0.4 would 
-# give degree of membership 0.2). Since three degrees of membership are given for each danger rating (high, avg, and low danger) the
-# max of the three is returned.
-
+# Clipping is done by taking the minimum degree of membership for two variables (ex. fast bot speed with 0.2 and near wall 0.4 would give degree of membership 0.2). Since three degrees of membership are given for each danger rating (high, avg, and low danger) the max of the three is returned.
 def calculate_wall_danger(wall_dist: WallDistance, bot_speed: Speed):
     wall_high_danger_dom_one = min(wall_dist.near_dom, bot_speed.fast_dom)
     wall_high_danger_dom_two = min(wall_dist.medium_dom, bot_speed.fast_dom)
@@ -202,9 +237,13 @@ def calculate_bullet_danger(bullet_dist: ObjectDistance, bullet_angle: TurnAngle
     bullet_low_danger_dom = max(bullet_low_danger_dom_one, bullet_low_danger_dom_two, bullet_low_danger_dom_three)
 
     return calculate_centroid(bullet_low_danger_dom, bullet_med_danger_dom, bullet_high_danger_dom)
+    
 
 # Function to calculate the centroid of three aggregated outputs. This is done in intervals of 10, and the crisp output returned is a number 0-100. 30 is meant to represent 0+10+20, 180 is 30+40+50+60, and 340 is the sum of the rest of the numbers through 100. This is divided by the amount of intervals each degree of membership had in the sum (ex. low has 0, 10, and 20 so low's degree of membership is divided by 3).
 def calculate_centroid(low, medium, high):
-    return (30 * low + 180 * medium + 340 * high) / (3 * low + 4 * medium + 4 * high)
+    if (low+medium+high) == 0:
+    	return 0
+    else:
+    	return (30 * low + 180 * medium + 340 * high) / (3 * low + 4 * medium + 4 * high)
     
 ai.start(AI_loop, ["-name", "bestBot", "-join", "localhost"])
