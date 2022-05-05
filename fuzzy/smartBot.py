@@ -82,23 +82,27 @@ def AI_loop():
     front_wall = ai.wallFeeler(2000, heading)
     topWall = ai.wallFeeler(2000,90)
     bottomWall = ai.wallFeeler(2000,heading-180)
+
+    if wall_danger == bullet_danger == enemy_chance:
+        wall_danger += 1    
     
     max_rating = max(wall_danger, bullet_danger, enemy_chance)
     
-    if wall_danger == bullet_danger == enemy_chance:
-        wall_danger += 1
-    	
-    print("wall danger: " + str(wall_danger), "bullet danger: " + str(bullet_danger), "enemy chance: " + str(enemy_chance))
-    
     # Fire wall danger with top priority
     if wall_danger == max_rating:  
-          WALL_DIST = 350 
-          if track_wall < WALL_DIST and left_wall < right_wall:
+          WALL_DIST = 350
+          if bottomWall < 100:
+            ai.thrust(1)
+          elif ai.selfSpeed() < 4:
+            ai.thrust(1)
+          elif track_wall < WALL_DIST and left_wall < right_wall:
             ai.turnRight(1)
-          elif track_wall < WALL_DIST and leftWall >= right_wall:
+          elif track_wall < WALL_DIST and left_wall >= right_wall:
             ai.turnLeft(1)
           elif left_wall < right_wall:
             ai.turnRight(1)
+          elif bottomWall < 500 and ai.selfSpeed() < 5:
+              ai.thrust(1)
           else:
             ai.turnLeft(1)
  
@@ -114,12 +118,10 @@ def AI_loop():
             ai.thrust(1)
           elif right_wall < 100:
             ai.thrust(1)
-          elif left_wall < 100: 
+          elif left_wall < 100:
             ai.thrust(1)
           elif bottomWall < 100:
             ai.thrust(1)
-          else:
-            ai.fireShot()
     # Fire enemy chance rating. Statements were made so the bot turns in the direction which allows it to aim at the enemy quickest               
     elif enemy_chance == max_rating:
         enemy_deg = ai.lockHeadingDeg()
