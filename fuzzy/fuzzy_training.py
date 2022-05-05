@@ -182,6 +182,10 @@ def AI_loop():
         chromosome_updated = True
         fitness = 0
 
+    if ai.selfScore() > game_score:
+        game_score = ai.selfScore()
+        fitness += 100
+
 
 def get_initial_chromosome():
     with open('fuzzy_population.csv', newline='') as f:
