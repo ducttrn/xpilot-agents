@@ -11,7 +11,6 @@ from calculate_fuzzy import calculate_wall_danger, calculate_bullet_danger, calc
 from genetic_algorithm import evolve_one_generation
 
 
-WALL_DIST = int(chromosome[146:155], 2)
 population_size = 50
 
 
@@ -36,6 +35,7 @@ def AI_loop():
     wall_dist = WallDistance(track_wall, chromosome)
     bot_speed = Speed(ai.selfSpeed(), chromosome)
     wall_danger = calculate_wall_danger(wall_dist, bot_speed)
+    dist_var = int(chromosome[146:155], 2)
 
     # Offense
     enemy_id = ai.closestShipId()
@@ -88,9 +88,9 @@ def AI_loop():
             ai.thrust(1)
         elif ai.selfSpeed() < int(chromosome[164:168], 2):
             ai.thrust(1)
-        elif track_wall < WALL_DIST and left_wall < right_wall:
+        elif track_wall < dist_var and left_wall < right_wall:
             ai.turnRight(1)
-        elif track_wall < WALL_DIST and left_wall >= right_wall:
+        elif track_wall < dist_var and left_wall >= right_wall:
             ai.turnLeft(1)
         elif left_wall < right_wall:
             ai.turnRight(1)
@@ -102,9 +102,9 @@ def AI_loop():
         # Thrust rules  
         if ai.selfSpeed() == 0 and front_wall < int(chromosome[182:191], 2):
             ai.thrust(0)
-        elif front_wall > WALL_DIST + int(chromosome[191:200], 2) and track_wall < WALL_DIST and ai.selfSpeed() < int(chromosome[200:204], 2):
+        elif front_wall > dist_var + int(chromosome[191:200], 2) and track_wall < dist_var and ai.selfSpeed() < int(chromosome[200:204], 2):
             ai.thrust(1)
-        elif front_wall > WALL_DIST and ai.selfSpeed() < int(chromosome[204:208], 2):
+        elif front_wall > dist_var and ai.selfSpeed() < int(chromosome[204:208], 2):
             ai.thrust(1)
             ai.fireShot()
         elif top_wall < int(chromosome[208:217], 2):
