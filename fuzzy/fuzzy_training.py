@@ -23,7 +23,10 @@ def AI_loop():
     global game_score
     global current_row
 
-    ai.thrust(0)
+    try:
+        ai.thrust(0)
+    except:
+        return
     ai.turnLeft(0)
     ai.turnRight(0)
     ai.setTurnSpeed(20)
@@ -119,6 +122,7 @@ def AI_loop():
     # Fire enemy chance rating. 
     # Statements were made so the bot turns in the direction which allows it to aim at the enemy quickest               
     elif enemy_chance == max_rating:
+        ai.fireShot()
         enemy_deg = ai.lockHeadingDeg()
         # Shoot if enemy is within 40 degrees of heading 
         if abs(heading - enemy_deg) < int(chromosome[244:251], 2):
