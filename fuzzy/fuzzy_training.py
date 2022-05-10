@@ -11,7 +11,6 @@ from calculate_fuzzy import calculate_wall_danger, calculate_bullet_danger, calc
 from genetic_algorithm import evolve_one_generation
 
 
-WALL_DIST = 350
 population_size = 50
 
 
@@ -24,7 +23,10 @@ def AI_loop():
     global game_score
     global current_row
 
-    ai.thrust(0)
+    try:
+        ai.thrust(0)
+    except:
+        return
     ai.turnLeft(0)
     ai.turnRight(0)
     ai.setTurnSpeed(20)
@@ -36,6 +38,7 @@ def AI_loop():
     wall_dist = WallDistance(track_wall, chromosome)
     bot_speed = Speed(ai.selfSpeed(), chromosome)
     wall_danger = calculate_wall_danger(wall_dist, bot_speed)
+    dist_var = int(chromosome[146:155], 2)
 
     # Offense
     enemy_id = ai.closestShipId()
@@ -84,62 +87,63 @@ def AI_loop():
 
     # Fire wall danger with top priority
     if wall_danger == max_rating:
-        if bottom_wall < 100:
+        if bottom_wall < int(chromosome[155:164], 2):
             ai.thrust(1)
-        elif ai.selfSpeed() < 4:
+        elif ai.selfSpeed() < int(chromosome[164:168], 2):
             ai.thrust(1)
-        elif track_wall < WALL_DIST and left_wall < right_wall:
+        elif track_wall < dist_var and left_wall < right_wall:
             ai.turnRight(1)
-        elif track_wall < WALL_DIST and left_wall >= right_wall:
+        elif track_wall < dist_var and left_wall >= right_wall:
             ai.turnLeft(1)
         elif left_wall < right_wall:
             ai.turnRight(1)
-        elif bottom_wall < 500 and ai.selfSpeed() < 5:
+        elif bottom_wall < int(chromosome[168:178], 2) and ai.selfSpeed() < int(chromosome[178:182], 2):
             ai.thrust(1)
         else:
             ai.turnLeft(1)
 
         # Thrust rules  
-        if ai.selfSpeed() == 0 and front_wall < 300:
+        if ai.selfSpeed() == 0 and front_wall < int(chromosome[182:191], 2):
             ai.thrust(0)
-        elif front_wall > WALL_DIST + 350 and track_wall < WALL_DIST and ai.selfSpeed() < 10:
+        elif front_wall > dist_var + int(chromosome[191:200], 2) and track_wall < dist_var and ai.selfSpeed() < int(chromosome[200:204], 2):
             ai.thrust(1)
-        elif front_wall > WALL_DIST and ai.selfSpeed() < 6:
+        elif front_wall > dist_var and ai.selfSpeed() < int(chromosome[204:208], 2):
             ai.thrust(1)
             ai.fireShot()
-        elif top_wall < 100:
+        elif top_wall < int(chromosome[208:217], 2):
             ai.thrust(1)
-        elif right_wall < 100:
+        elif right_wall < int(chromosome[217:226], 2):
             ai.thrust(1)
-        elif left_wall < 100:
+        elif left_wall < int(chromosome[226:235], 2):
             ai.thrust(1)
-        elif bottom_wall < 100:
+        elif bottom_wall < int(chromosome[235:244], 2):
             ai.thrust(1)
 
     # Fire enemy chance rating. 
     # Statements were made so the bot turns in the direction which allows it to aim at the enemy quickest               
     elif enemy_chance == max_rating:
+        ai.fireShot()
         enemy_deg = ai.lockHeadingDeg()
         # Shoot if enemy is within 40 degrees of heading 
-        if abs(heading - enemy_deg) < 40:
+        if abs(heading - enemy_deg) < int(chromosome[244:251], 2):
             ai.fireShot()
-        elif heading < 180 and enemy_deg < 180:
+        elif heading < int(chromosome[251:258], 2) and enemy_deg < int(chromosome[258:265], 2):
             if heading > enemy_deg:
                 ai.turnRight(1)
             else:
                 ai.turnLeft(1)
-        elif heading > 180 and enemy_deg > 180:
+        elif heading > int(chromosome[265:272], 2) and enemy_deg > int(chromosome[272:279], 2):
             if enemy_deg > heading:
                 ai.turnLeft(1)
             else:
                 ai.turnRight(1)
-        elif heading > 180 and enemy_deg < 180:
-            if enemy_deg > (heading - 180):
+        elif heading > int(chromosome[279:286], 2) and enemy_deg < int(chromosome[286:293], 2):
+            if enemy_deg > (heading - int(chromosome[293:300], 2)):
                 ai.turnRight(1)
             else:
                 ai.turnLeft(1)
         else:
-            if enemy_deg < (heading + 180):
+            if enemy_deg < (heading + int(chromosome[300:307], 2)):
                 ai.turnLeft(1)
             else:
                 ai.turnRight(1)
@@ -147,7 +151,7 @@ def AI_loop():
     # If bullet danger is max, thrust pilot to avoid danger.
     # Sets cap for speed so the pilot doesn't lose control
     elif bullet_danger == max_rating:
-        if ai.selfSpeed() < 6:
+        if ai.selfSpeed() < int(chromosome[307:311], 2):
             ai.thrust(1)
 
     if ai.selfAlive() == 1:

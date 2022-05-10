@@ -9,11 +9,11 @@ class ObjectDistance:
 
     def calculate_dom_near_dist(self, chrms):
         
-        if 0 <= self.dist <= int(chrms[0:8], 2):
+        if 0 <= self.dist <= int(chrms[0:9], 2):
             dom = 1
             
-        elif int(chrms[0:8], 2) < self.dist <= (int(chrms[0:8], 2) + int(chrms[9:16], 2)):
-            dom = ((int(chrms[0:8], 2) + int(chrms[9:16], 2)) - self.dist) * (1 / (int(chrms[9:16], 2)))
+        elif int(chrms[0:9], 2) < self.dist <= (int(chrms[0:9], 2) + int(chrms[9:17], 2)):
+            dom = ((int(chrms[0:9], 2) + int(chrms[9:17], 2)) - self.dist) * (1 / (int(chrms[9:17], 2)))
             
         else:
             dom = 0
@@ -21,11 +21,11 @@ class ObjectDistance:
         return dom
 
     def calculate_dom_medium_dist(self, chrms):
-        if (int(chrms[0:8], 2) + int(chrms[33:40], 2)) <= self.dist <= (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2)):
-            dom = (1 / int(chrms[17:24], 2)) * (self.dist - (int(chrms[0:8], 2) + int(chrms[33:40], 2)))
+        if (int(chrms[0:9], 2) + int(chrms[33:41], 2)) <= self.dist <= (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2)):
+            dom = (1 / int(chrms[17:25], 2)) * (self.dist - (int(chrms[0:9], 2) + int(chrms[33:41], 2)))
             
-        elif (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2)) < self.dist <= (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2) + int(chrms[17:24], 2)):
-            dom = 1 - ((1 / int(chrms[17:24], 2)) * (self.dist - (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2))))
+        elif (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2)) < self.dist <= (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2) + int(chrms[17:25], 2)):
+            dom = 1 - ((1 / int(chrms[17:25], 2)) * (self.dist - (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2))))
         
         else:
             dom = 0
@@ -33,10 +33,10 @@ class ObjectDistance:
         return dom
 
     def calculate_dom_far_dist(self, chrms):
-        if (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2) + int(chrms[41:48], 2)) <= self.dist < (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2) + int(chrms[41:48], 2) + int(chrms[25:32], 2)):
-            dom = (1 / int(chrms[25:32], 2)) * (self.dist - (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2) + int(chrms[41:48], 2)))
+        if (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2) + int(chrms[41:49], 2)) <= self.dist < (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2) + int(chrms[41:49], 2) + int(chrms[25:33], 2)):
+            dom = (1 / int(chrms[25:33], 2)) * (self.dist - (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2) + int(chrms[41:49], 2)))
         
-        elif (int(chrms[0:8], 2) + int(chrms[33:40], 2) + int(chrms[17:24], 2) + int(chrms[41:48], 2) + int(chrms[25:32], 2)) <= self.dist:
+        elif (int(chrms[0:9], 2) + int(chrms[33:41], 2) + int(chrms[17:25], 2) + int(chrms[41:49], 2) + int(chrms[25:33], 2)) <= self.dist:
             dom = 1
         
         else:
