@@ -1,6 +1,5 @@
 # Import libraries, including the degree of membership libraries we created
 import math
-import csv
 
 import libpyAI as ai
 from object_distance import ObjectDistance
@@ -8,25 +7,15 @@ from turn_angle import TurnAngle
 from wall_distance import WallDistance
 from speed import Speed
 from calculate_fuzzy import calculate_wall_danger, calculate_bullet_danger, calculate_enemy_chance
-from genetic_algorithm import evolve_one_generation
 
 
-population_size = 50
 
 
 def AI_loop():
     # Release keys
     global chromosome
-    global generation
-    global chromosome_updated
-    global fitness
-    global game_score
-    global current_row
 
-    try:
-        ai.thrust(0)
-    except:
-        return
+    ai.thrust(0)
     ai.turnLeft(0)
     ai.turnRight(0)
     ai.setTurnSpeed(20)
@@ -154,57 +143,7 @@ def AI_loop():
         if ai.selfSpeed() < int(chromosome[307:311], 2):
             ai.thrust(1)
 
-    if ai.selfAlive() == 1:
-        fitness += 1
-        chromosome_updated = False
-
-    if ai.selfAlive() == 0 and chromosome_updated is False:
-        with open('fuzzy_population.csv', 'r') as f:
-            r = csv.reader(f)
-            lines = list(r)
-            lines[current_row][1] = str(fitness)
-
-        with open('fuzzy_population.csv', 'w') as f:
-            writer = csv.writer(f)
-            writer.writerows(lines)
-
-        if current_row < population_size:
-            # Update weights using next chromosome
-            chromosome = lines[current_row + 1][0]
-            current_row += 1
-
-        elif current_row == population_size:
-            # Reach last chromosome in the population then evolve
-            evolve_one_generation('fuzzy_population.csv', 'fuzzy_ga_config.json')
-            chromosome = get_initial_chromosome()
-            current_row = 1
-            generation += 1
-            print(generation)
-
-        # Mark weights as updated to prevent multiple updates
-        # due to the bot remains dead for a few frames
-        chromosome_updated = True
-        fitness = 0
-
-    if ai.selfScore() > game_score:
-        game_score = ai.selfScore()
-        fitness += 400
-
-
-def get_initial_chromosome():
-    with open('fuzzy_population.csv', newline='') as f:
-        csv_reader = csv.reader(f)
-        next(csv_reader)
-        line = next(csv_reader)
-        return line[0]
-
-
 if __name__ == '__main__':
-    generation = 1
-    fitness = 0
-    chromosome_updated = False
-    current_row = 1
-    chromosome = get_initial_chromosome()
-    game_score = 0
+    chromosome = '01111100001000010111100001011011000001110000101010011010011010101011111101100001111010011110011110010110101111100001101110101100111110100111111101001001110000011111011100011111100010111110100100111101010001100000110101001100100100001100010110111011011000010100011101110100110011000010001000110000011111011000010'
 
     ai.start(AI_loop, ["-name", "fuzzyBot", "-join", "localhost"])
