@@ -2,9 +2,12 @@ import csv
 import math
 
 import libpyAI as ai
+from training.genetic_algorithm import evolve_one_generation
 
 
-chromosome = '01111100001000010111100001011011000001110000101010011010011010101011111101100001111010011110011110010110101111100001101110101110111110100111111101001001110100011111011100011111100010111110100100111101010001100000110101001100100100001100010110111011011000010100011101110100110011000010001000110000011111011000010'
+population_size = 100
+
+
 def convert_genes_to_weight(genes):
     return (int(genes, 2) / 64 - 0.5) * 2
 
@@ -61,11 +64,53 @@ def AI_loop():
         enemy_dir, enemy_heading, enemy_reload_time,
         bullet_dist, mdb_angle, bias
     ]
-    
-    weights = [
+
+    global fitness
+    global weights_updated
+    global current_row
+    global weights
+    global game_score
+    global generation
+
+    # Count how long alive for fitness
+    if ai.selfAlive() == 1:
+        fitness += 1
+        weights_updated = False
+
+    if ai.selfAlive() == 1 and ai.selfSpeed() == 0:
+        fitness -= 1
+
+    if ai.selfAlive() == 0 and weights_updated is False:
+        with open('nn_population.csv', 'r') as f:
+            r = csv.reader(f)
+            lines = list(r)
+            lines[current_row][1] = str(fitness)
+
+        with open('nn_population.csv', 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(lines)
+
+        if current_row < population_size:
+            # Update weights using next chromosome
+            chromosome = lines[current_row + 1][0]
+            weights = [
                 convert_genes_to_weight(chromosome[i:i + 6])
                 for i in range(0, len(chromosome), 6)
             ]
+            current_row += 1
+
+        elif current_row == population_size:
+            # Reach last chromosome in the population then evolve
+            evolve_one_generation('nn_population.csv', 'nn_ga_config.json')
+            weights = get_initial_weights()
+            current_row = 1
+            generation += 1
+            print(generation)
+
+        # Mark weights as updated to prevent multiple updates
+        # due to the bot remains dead for a few frames
+        weights_updated = True
+        fitness = 0
 
     # Forward Propagate in a Neural Network
     # with 18 inputs and 3 outputs, 0 hidden layers
@@ -84,6 +129,29 @@ def AI_loop():
         turn = -1
     ai.turn(int(turn * 20))
 
+    if ai.selfScore() > game_score:
+        game_score = ai.selfScore()
+        fitness += 100
+
+
+def get_initial_weights():
+    with open('nn_population.csv', 'r') as f:
+        csv_reader = csv.reader(f)
+        next(csv_reader)
+        line = next(csv_reader)
+        return [
+            convert_genes_to_weight(line[0][i:i + 6])
+            for i in range(0, len(line[0]), 6)
+        ]
+
 
 if __name__ == "__main__":
+    fitness = 0
+    weights_updated = False
+    # Start from first chromosome
+    weights = get_initial_weights()
+    current_row = 1
+    game_score = 0
+    generation = 0
+
     ai.start(AI_loop, ["-name", "NNBot", "-join", "localhost"])

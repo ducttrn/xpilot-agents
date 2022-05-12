@@ -1,32 +1,19 @@
 # Import libraries, including the degree of membership libraries we created
 import math
-import csv
 
 import libpyAI as ai
-from object_distance import ObjectDistance
-from turn_angle import TurnAngle
-from wall_distance import WallDistance
-from speed import Speed
-from calculate_fuzzy import calculate_wall_danger, calculate_bullet_danger, calculate_enemy_chance
-from genetic_algorithm import evolve_one_generation
-
-
-population_size = 50
+from training.fuzzy.object_distance import ObjectDistance
+from training.fuzzy.turn_angle import TurnAngle
+from training.fuzzy.wall_distance import WallDistance
+from training.fuzzy.speed import Speed
+from training.fuzzy.calculate_fuzzy import calculate_wall_danger, calculate_bullet_danger, calculate_enemy_chance
 
 
 def AI_loop():
     # Release keys
     global chromosome
-    global generation
-    global chromosome_updated
-    global fitness
-    global game_score
-    global current_row
 
-    try:
-        ai.thrust(0)
-    except:
-        return
+    ai.thrust(0)
     ai.turnLeft(0)
     ai.turnRight(0)
     ai.setTurnSpeed(20)
@@ -105,7 +92,8 @@ def AI_loop():
         # Thrust rules  
         if ai.selfSpeed() == 0 and front_wall < int(chromosome[182:191], 2):
             ai.thrust(0)
-        elif front_wall > dist_var + int(chromosome[191:200], 2) and track_wall < dist_var and ai.selfSpeed() < int(chromosome[200:204], 2):
+        elif front_wall > dist_var + int(chromosome[191:200], 2) and track_wall < dist_var and ai.selfSpeed() < int(
+                chromosome[200:204], 2):
             ai.thrust(1)
         elif front_wall > dist_var and ai.selfSpeed() < int(chromosome[204:208], 2):
             ai.thrust(1)
@@ -121,7 +109,7 @@ def AI_loop():
 
     # Fire enemy chance rating. 
     # Statements were made so the bot turns in the direction which allows it to aim at the enemy quickest               
-    elif enemy_chance == max_rating:
+    elif enemy_chance > 0:
         ai.fireShot()
         enemy_deg = ai.lockHeadingDeg()
         # Shoot if enemy is within 40 degrees of heading 
@@ -154,57 +142,11 @@ def AI_loop():
         if ai.selfSpeed() < int(chromosome[307:311], 2):
             ai.thrust(1)
 
-    if ai.selfAlive() == 1:
-        fitness += 1
-        chromosome_updated = False
-
-    if ai.selfAlive() == 0 and chromosome_updated is False:
-        with open('fuzzy_population.csv', 'r') as f:
-            r = csv.reader(f)
-            lines = list(r)
-            lines[current_row][1] = str(fitness)
-
-        with open('fuzzy_population.csv', 'w') as f:
-            writer = csv.writer(f)
-            writer.writerows(lines)
-
-        if current_row < population_size:
-            # Update weights using next chromosome
-            chromosome = lines[current_row + 1][0]
-            current_row += 1
-
-        elif current_row == population_size:
-            # Reach last chromosome in the population then evolve
-            evolve_one_generation('fuzzy_population.csv', 'fuzzy_ga_config.json')
-            chromosome = get_initial_chromosome()
-            current_row = 1
-            generation += 1
-            print(generation)
-
-        # Mark weights as updated to prevent multiple updates
-        # due to the bot remains dead for a few frames
-        chromosome_updated = True
-        fitness = 0
-
-    if ai.selfScore() > game_score:
-        game_score = ai.selfScore()
-        fitness += 400
-
-
-def get_initial_chromosome():
-    with open('fuzzy_population.csv', newline='') as f:
-        csv_reader = csv.reader(f)
-        next(csv_reader)
-        line = next(csv_reader)
-        return line[0]
-
 
 if __name__ == '__main__':
-    generation = 1
-    fitness = 0
-    chromosome_updated = False
-    current_row = 1
-    chromosome = get_initial_chromosome()
-    game_score = 0
+    chromosome = '101111011101001110010100010111011011111000111100010011101101110001111000101001111100100' \
+                 '111010100011000000111110111010010110101100101010100110111111001110000001111100110001001' \
+                 '010001011010000000000111100110011001101100100101011010101001010010110101010010010000000' \
+                 '01110100000110010011001110111010101000110010000110'
 
     ai.start(AI_loop, ["-name", "fuzzyBot", "-join", "localhost"])
