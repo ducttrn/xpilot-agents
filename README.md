@@ -13,8 +13,7 @@ We had the two controllers compete individually against a well-trained aggressiv
 ### Install X-Pilot AI
 Follow the instructions [here](https://oak.conncoll.edu/parker/com407/Xpilot-AI_setup.txt) and start a map.
 ### Training
-0. Start an opponent
-Start an opponent of yours before starting the training agent. Example:
+0. Start an opponent of yours before starting the training agent
 ```python
 > python3 Dumbo.py
 ```
