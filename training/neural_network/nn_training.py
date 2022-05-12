@@ -5,10 +5,8 @@ import libpyAI as ai
 from training.genetic_algorithm import evolve_one_generation
 
 
-population_size = 100
-
-
 def convert_genes_to_weight(genes):
+    # Convert from genes to numerical weights for the neural network
     return (int(genes, 2) / 64 - 0.5) * 2
 
 
@@ -41,6 +39,7 @@ def AI_loop():
     SW = ai.wallFeeler(1000, heading + 135) / 1000
     SE = ai.wallFeeler(1000, heading - 135) / 1000
 
+    # Enemy parameters
     enemy_dist = ai.enemyDistance(0) / 1000
     enemy_dir = convert_angle(ai.aimdir(0)) or 0
     enemy_heading = convert_angle(ai.enemyHeadingDeg(0)) or 0
@@ -58,6 +57,7 @@ def AI_loop():
     mdb_angle = convert_angle((math.atan2(delta_y, delta_x) * 180 / math.pi) + 180)  # 0-360 with +180
 
     bias = 1
+    # Input data to the neural network (perceptron)
     data = [
         convert_angle(heading), vel, reload_time,
         N, S, W, E, NW, NE, SW, SE, enemy_dist,
@@ -77,10 +77,12 @@ def AI_loop():
         fitness += 1
         weights_updated = False
 
+    # Punish the chromosome if it does not move
     if ai.selfAlive() == 1 and ai.selfSpeed() == 0:
         fitness -= 1
 
     if ai.selfAlive() == 0 and weights_updated is False:
+        # Write fitness in the population file
         with open('nn_population.csv', 'r') as f:
             r = csv.reader(f)
             lines = list(r)
@@ -129,12 +131,15 @@ def AI_loop():
         turn = -1
     ai.turn(int(turn * 20))
 
+    # Give bonus if the agent gets a kill
     if ai.selfScore() > game_score:
         game_score = ai.selfScore()
         fitness += 100
 
 
 def get_initial_weights():
+    # Read the first chromosome in the file
+    # and convert it to weights for the neural network
     with open('nn_population.csv', 'r') as f:
         csv_reader = csv.reader(f)
         next(csv_reader)
@@ -146,12 +151,13 @@ def get_initial_weights():
 
 
 if __name__ == "__main__":
+    population_size = 100
     fitness = 0
     weights_updated = False
     # Start from first chromosome
     weights = get_initial_weights()
     current_row = 1
     game_score = 0
-    generation = 0
+    generation = 1
 
     ai.start(AI_loop, ["-name", "NNBot", "-join", "localhost"])

@@ -11,9 +11,6 @@ from calculate_fuzzy import calculate_wall_danger, calculate_bullet_danger, calc
 from training.genetic_algorithm import evolve_one_generation
 
 
-population_size = 50
-
-
 def AI_loop():
     # Release keys
     global chromosome
@@ -159,6 +156,7 @@ def AI_loop():
         chromosome_updated = False
 
     if ai.selfAlive() == 0 and chromosome_updated is False:
+        # Write the fitness to the population file
         with open('fuzzy_population.csv', 'r') as f:
             r = csv.reader(f)
             lines = list(r)
@@ -186,12 +184,14 @@ def AI_loop():
         chromosome_updated = True
         fitness = 0
 
+    # Give bonus if the agent gets a kill
     if ai.selfScore() > game_score:
         game_score = ai.selfScore()
         fitness += 400
 
 
 def get_initial_chromosome():
+    # Read the population file and get the first chromosome
     with open('fuzzy_population.csv', newline='') as f:
         csv_reader = csv.reader(f)
         next(csv_reader)
@@ -200,10 +200,12 @@ def get_initial_chromosome():
 
 
 if __name__ == '__main__':
+    population_size = 50
     generation = 1
     fitness = 0
     chromosome_updated = False
     current_row = 1
+    # Start with the first chromosome
     chromosome = get_initial_chromosome()
     game_score = 0
 

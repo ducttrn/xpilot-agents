@@ -1,6 +1,4 @@
 {
-  "population_size": 50,
   "crossover_probability": 0.7,
   "mutation_probability": 0.1,
-  "chromosome_len": 24
 }
