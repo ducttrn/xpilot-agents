@@ -1,6 +1,6 @@
 import csv
 import json
-import random
+import secrets
 
 
 class Chromosome:
@@ -51,8 +51,7 @@ class Population:
         # Crossover until have a new population with size equal to the current one
         while len(crossover_result) < len(self.chromosomes):
             # Select 2 chromosomes to be parents
-            parent_1, parent_2 = random.choices(
-                population=self.chromosomes,
+            parent_1, parent_2 = secrets.SystemRandom().choices(population=self.chromosomes,
                 weights=sqr_weights,
                 k=2
             )
@@ -67,11 +66,11 @@ class Population:
         """
         offspring_1 = Chromosome()
         offspring_2 = Chromosome()
-        if random.random() < crossover_probability:
+        if secrets.SystemRandom().random() < crossover_probability:
             # Double Crossover happens
             # Select the 2 crossover points randomly
-            crossover_point_1 = random.randint(1, self.chromosome_len // 2)
-            crossover_point_2 = random.randint(self.chromosome_len // 2 + 1, self.chromosome_len - 1)
+            crossover_point_1 = secrets.SystemRandom().randint(1, self.chromosome_len // 2)
+            crossover_point_2 = secrets.SystemRandom().randint(self.chromosome_len // 2 + 1, self.chromosome_len - 1)
             offspring_1.genes = parent_1.genes[:crossover_point_1] \
                                 + parent_2.genes[crossover_point_1:crossover_point_2] \
                                 + parent_1.genes[crossover_point_2:]
@@ -89,10 +88,10 @@ class Population:
     def mutate_population(self, crossover_result, mutation_probability):
         mutate_result = []
         for chromosome in crossover_result:
-            if random.random() < mutation_probability:
+            if secrets.SystemRandom().random() < mutation_probability:
                 # If mutation happens
                 # Select a random mutation point
-                mutation_point = random.randint(0, self.chromosome_len - 1)
+                mutation_point = secrets.SystemRandom().randint(0, self.chromosome_len - 1)
                 # Flip the gene at the mutation point (1 -> 0, 0 -> 1)
                 chromosome.genes = chromosome.genes[:mutation_point] + str(
                     1 - int(chromosome.genes[mutation_point])) + chromosome.genes[mutation_point + 1:]
@@ -113,7 +112,7 @@ def generate_initial_population(population_file, population_size, chromosome_len
         for _ in range(population_size):
             genes = ''
             for _ in range(chromosome_len):
-                if random.random() > 0.5:
+                if secrets.SystemRandom().random() > 0.5:
                     genes += '1'
                 else:
                     genes += '0'
