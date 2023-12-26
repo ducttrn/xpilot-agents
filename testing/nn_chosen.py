@@ -74,15 +74,15 @@ def AI_loop():
 
     # Forward Propagate in a Neural Network
     # with 18 inputs and 3 outputs, 0 hidden layers
-    thrust = sum([i * j for i, j in zip(data, weights[:18])])
+    thrust = sum(i * j for i, j in zip(data, weights[:18]))
     if thrust > 0:
         ai.thrust(1)
 
-    shoot = sum([i * j for i, j in zip(data, weights[18:36])])
+    shoot = sum(i * j for i, j in zip(data, weights[18:36]))
     if shoot > 0:
         ai.fireShot()
 
-    turn = sum([i * j for i, j in zip(data, weights[37:])]) / 15
+    turn = sum(i * j for i, j in zip(data, weights[37:])) / 15
     if turn > 1:
         turn = 1
     elif turn < -1:
