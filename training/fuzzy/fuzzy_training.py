@@ -38,8 +38,7 @@ def AI_loop():
     dist_var = int(chromosome[146:155], 2)
 
     # Offense
-    enemy_id = ai.closestShipId()
-    if enemy_id != -1:
+    if (enemy_id := ai.closestShipId()) != -1:
         enemy_distance = ObjectDistance(ai.enemyDistanceId(enemy_id), chromosome)
         ai.lockClose()
         enemy_angle = TurnAngle(abs(ai.selfHeadingDeg() - ai.lockHeadingDeg()), chromosome)
